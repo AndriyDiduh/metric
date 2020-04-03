@@ -184,6 +184,48 @@ std::tuple<std::vector<std::vector<double>>, std::vector<int>> readCsvData(std::
 	return { rows, labels };
 }
 
+std::tuple<std::vector<std::vector<double>>, std::vector<int>> readMnist(std::string filename, char delimeter, int max_rows)
+{
+	std::fstream fin;
+
+	fin.open(filename, std::ios::in);
+	
+	std::vector<double> row;
+	std::string line, word, w;
+
+	std::vector<std::vector<double>> rows;
+	std::vector<int> labels;
+
+	// omit header
+	getline(fin, line);
+
+	int i = 0;
+	while (getline(fin, line))
+	{
+		i++;
+		std::stringstream s(line);
+
+		// get label
+		getline(s, word, delimeter);
+		labels.push_back(std::stoi(word));
+
+		row.clear();
+		while (getline(s, word, delimeter))
+		{			
+			row.push_back(std::stod(word));
+		}
+
+		rows.push_back(row);
+
+		if (i >= max_rows)
+		{
+			break;
+		}
+	}
+
+	return { rows, labels };
+}
+
 std::tuple<std::vector<std::string>, std::vector<std::vector<double>>> readCsvData2(std::string filename, char delimeter)
 {
 	std::fstream fin;
@@ -275,6 +317,20 @@ std::vector<double> noise_image(std::vector<double> image, int min, int max)
 	return image;
 }
 
+template <class ContainerType>
+void write_csv(ContainerType data, std::string filename, std::string sep=",")  // container of containers expected, TODO add check
+{
+    std::ofstream outputFile;
+    outputFile.open(filename);
+        for (auto i = 0; i < data.size(); ++i) {
+            for (auto j = 0; j < data[i].size(); j++) {
+                outputFile << std::to_string(static_cast<int>(data[i][j])) << sep;
+            }
+            outputFile << std::endl;
+        }
+        outputFile.close();
+}
+
 ///
 
 int main(int argc, char *argv[])
@@ -300,7 +356,7 @@ int main(int argc, char *argv[])
 	std::vector<Record> test_set;
 	std::vector<int> test_labels;
 	
-	std::tie(dataset, labels) = readCsvData("assets/mnist_train.csv", ',');
+	std::tie(dataset, labels) = readMnist("assets/mnist_train.csv", ',', 1000);
 	
 	std::cout << std::endl;
 	std::cout << "labels:" << std::endl;
@@ -329,12 +385,12 @@ int main(int argc, char *argv[])
 
 	metric::KOC_factory<Record, metric::Grid4, metric::CosineInverted<double>> simple_koc_factory(best_w_grid_size, best_h_grid_size, sigma, 0.8, 0.0, 200, 0, 255, 4, 2.0, random_seed);    
 	auto simple_koc = simple_koc_factory(dataset, num_clusters); 
-
+	
 	std::vector<int> grid(best_w_grid_size * best_h_grid_size, -1);
-	for (int i = 0; i < dataset.size(); i++)
-	{
-		grid[simple_koc.som_.BMU(dataset[i])] = i;
-	}
+	//std::vector<double> grid(best_w_grid_size * best_h_grid_size, 999999999.9);
+	auto nodes = simple_koc.som_.get_weights();
+	//matrix_print(nodes);
+	write_csv(nodes, "nodes.csv");
 	
 	std::cout << std::endl;
 	vector_print(grid);	
