@@ -284,8 +284,8 @@ int main(int argc, char *argv[])
 
 	using Record = std::vector<double>;
 				
-	size_t best_w_grid_size = 4;
-	size_t best_h_grid_size = 3;
+	size_t best_w_grid_size = 20;
+	size_t best_h_grid_size = 20;
 
 	// if overrided from arguments
 	
@@ -329,7 +329,15 @@ int main(int argc, char *argv[])
 
 	metric::KOC_factory<Record, metric::Grid4, metric::CosineInverted<double>> simple_koc_factory(best_w_grid_size, best_h_grid_size, sigma, 0.8, 0.0, 200, 0, 255, 4, 2.0, random_seed);    
 	auto simple_koc = simple_koc_factory(dataset, num_clusters); 
+
+	std::vector<int> grid(best_w_grid_size * best_h_grid_size, -1);
+	for (int i = 0; i < dataset.size(); i++)
+	{
+		grid[simple_koc.som_.BMU(dataset[i])] = i;
+	}
 	
+	std::cout << std::endl;
+	vector_print(grid);	
 	
 	std::cout << std::endl;
 	std::cout << "train dataset:" << std::endl;
