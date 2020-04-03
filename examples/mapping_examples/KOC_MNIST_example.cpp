@@ -300,11 +300,11 @@ int main(int argc, char *argv[])
 	std::vector<Record> test_set;
 	std::vector<int> test_labels;
 	
-	std::tie(dataset, labels) = readCsvData("assets/mnist100.csv", ',');
+	std::tie(dataset, labels) = readCsvData("assets/mnist_train.csv", ',');
 	
 	std::cout << std::endl;
 	std::cout << "labels:" << std::endl;
-	vector_print(labels);
+	//vector_print(labels);
 	   
 	std::tie(test_set, test_labels) = readCsvData("assets/MNIST_anomalies.csv", ',');
 	test_set.push_back(dataset[0]);
