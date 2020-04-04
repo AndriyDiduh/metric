@@ -111,7 +111,7 @@ namespace kmedoids_details {
 			std::cout << "cost 4" << std::endl;
 
             int mj1 = seeds[assignments[j]];  // object id of j's nearest medoid
-			std::cout << "cost 4.5" << std::endl;
+			std::cout << "cost 4.5" << mj1 << " " << jstd::endl;
             T dj1 = DM(mj1, j);  // distance to j's nearest medoid
 			std::cout << "cost 5" << std::endl;
 
