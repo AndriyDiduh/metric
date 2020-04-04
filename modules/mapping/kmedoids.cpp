@@ -29,7 +29,6 @@ namespace kmedoids_details {
         // go through and assign each object to nearest medoid, keeping track of total distance.
         T total_distance = 0;
         for (int i = 0; i < assignments.size(); i++) {
-			std::cout << "assignment " << i << std::endl;
             T d1, d2;  // smallest, second smallest distance to medoid, respectively
             int m1, m2;  // index of medoids with distances d1, d2 from object i, respectively
             d1 = d2 = std::numeric_limits<T>::max();
@@ -106,19 +105,24 @@ namespace kmedoids_details {
     {
         T total = 0;
         for (int j = 0; j < assignments.size(); j++) {
+			std::cout << "cost 3" << std::endl;
             int mi = seeds[i];  // object id of medoid i
             T dhj = DM(h, j);  // distance between object h and object j
+			std::cout << "cost 4" << std::endl;
 
             int mj1 = seeds[assignments[j]];  // object id of j's nearest medoid
             T dj1 = DM(mj1, j);  // distance to j's nearest medoid
+			std::cout << "cost 5" << std::endl;
 
             // check if D bt/w medoid i and j is same as j's current nearest medoid.
             if (DM(mi, j) == dj1) {
+				std::cout << "cost 6" << std::endl;
                 T dj2 = std::numeric_limits<T>::max();
                 if (seeds.size() > 1) {  // look at 2nd nearest if there's more than one medoid.
                     int mj2 = seeds[sec_nearest[j]];  // object id of j's 2nd-nearest medoid
                     dj2 = DM(mj2, j);  // D to j's 2nd-nearest medoid
                 }
+				std::cout << "cost 7" << std::endl;
                 total += std::min(dj2, dhj) - dj1;
 
             } else if (dhj < dj1) {
