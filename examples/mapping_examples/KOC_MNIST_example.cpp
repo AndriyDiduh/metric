@@ -340,8 +340,8 @@ int main(int argc, char *argv[])
 
 	using Record = std::vector<double>;
 				
-	size_t best_w_grid_size = 20;
-	size_t best_h_grid_size = 20;
+	size_t best_w_grid_size = 4;
+	size_t best_h_grid_size = 4;
 
 	// if overrided from arguments
 	
@@ -356,7 +356,7 @@ int main(int argc, char *argv[])
 	std::vector<Record> test_set;
 	std::vector<int> test_labels;
 	
-	std::tie(dataset, labels) = readMnist("assets/mnist_train.csv", ',', 10000);
+	std::tie(dataset, labels) = readMnist("assets/mnist_train.csv", ',', 100);
 	
 	//std::cout << std::endl;
 	//std::cout << "labels:" << std::endl;
@@ -383,8 +383,10 @@ int main(int argc, char *argv[])
 	// extra deviation of the clusters from original in the KOC
 	double sigma = 1.75;
 
-	metric::KOC_factory<Record, metric::Grid4, metric::CosineInverted<double>> simple_koc_factory(best_w_grid_size, best_h_grid_size, sigma, 0.8, 0.0, 200, 0, 255, 4, 2.0, random_seed);    
+	metric::KOC_factory<Record, metric::Grid4, metric::EMD<double>> simple_koc_factory(best_w_grid_size, best_h_grid_size, sigma, 0.8, 0.0, 200, 0, 255, 4, 2.0, random_seed);    
+	std::cout << "#1 " << std::endl;
 	auto simple_koc = simple_koc_factory(dataset, num_clusters); 
+	std::cout << "#2" << std::endl;
 	
 	std::vector<int> grid(best_w_grid_size * best_h_grid_size, -1);
 	//std::vector<double> grid(best_w_grid_size * best_h_grid_size, 999999999.9);
