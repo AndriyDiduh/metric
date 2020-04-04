@@ -20,10 +20,14 @@ namespace metric {
 		template <class recType, class Graph, class Metric, class Distribution>
 		void KOC<recType, Graph, Metric, Distribution>::train(
 			const std::vector<recType>& samples, int num_clusters, int min_cluster_size)
-		{
+		{ 
+			std::cout << "#4" << std::endl;
 			som_.train(samples);
+			std::cout << "#5" << std::endl;
 			calculate_std_deviations_for_nodes(samples, samples.size());
+			std::cout << "#6" << std::endl;
 			std::tie(clusters, centroids, clusters_counts) = clusterize_nodes(num_clusters, min_cluster_size);
+			std::cout << "#7" << std::endl;
 		}
 
 
@@ -313,7 +317,8 @@ namespace metric {
 	KOC_details::KOC<recType, Graph, Metric, Distribution> KOC_factory<recType, Graph, Metric, Distribution>::operator()(const std::vector<recType>& samples, int num_clusters, int min_cluster_size)
 	{
 		KOC_details::KOC<recType, Graph, Metric, Distribution> koc(graph_, metric_, anomaly_sigma_, start_learn_rate_, finish_learn_rate_, iterations_, distribution_,
-			neighborhood_start_size_, neigbour_range_decay_, random_seed_);
+			neighborhood_start_size_, neigbour_range_decay_, random_seed_); 
+		std::cout << "#3" << std::endl;
 
 		koc.train(samples, num_clusters, min_cluster_size);
 

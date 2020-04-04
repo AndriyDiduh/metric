@@ -383,7 +383,7 @@ int main(int argc, char *argv[])
 	// extra deviation of the clusters from original in the KOC
 	double sigma = 1.75;
 
-	metric::KOC_factory<Record, metric::Grid4, metric::EMD<double>> simple_koc_factory(best_w_grid_size, best_h_grid_size, sigma, 0.8, 0.0, 200, 0, 255, 4, 2.0, random_seed);    
+	metric::KOC_factory<Record, metric::Grid4, metric::RandomEMD<Record, double>> simple_koc_factory(best_w_grid_size, best_h_grid_size, sigma, 0.8, 0.0, 10, 0, 255, 4, 2.0, random_seed);    
 	std::cout << "#1 " << std::endl;
 	auto simple_koc = simple_koc_factory(dataset, num_clusters); 
 	std::cout << "#2" << std::endl;
