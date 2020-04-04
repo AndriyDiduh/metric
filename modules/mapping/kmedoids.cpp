@@ -170,13 +170,15 @@ std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> kmedoids(
         for (int i = 0; i < counts.size(); ++i) {
             counts[i] = 0;
         }
-		std::cout << "update_cluster" << std::endl;
+		std::cout << "update_cluster 1 " << std::endl;
         total_distance = kmedoids_details::update_cluster(DM, seeds, assignments, sec_nearest, counts);
 
         //vars to keep track of minimum
         T minTotalCost = std::numeric_limits<T>::max();
         int minMedoid = 0;
         int minObject = 0;
+
+		std::cout << "update_cluster 2 " << std::endl;
 
         //iterate over each medoid
         for (int i = 0; i < k; i++) {
@@ -186,7 +188,9 @@ std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> kmedoids(
                     continue;
 
                 //see if the total cost of swapping i & h was less than min
+				std::cout << "cost 1" << std::endl;
                 T curCost = kmedoids_details::cost(i, h, DM, seeds, assignments, sec_nearest);
+				std::cout << "cost 2" << std::endl;
                 if (curCost < minTotalCost) {
                     minTotalCost = curCost;
                     minMedoid = i;
