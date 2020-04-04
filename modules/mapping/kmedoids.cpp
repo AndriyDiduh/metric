@@ -157,7 +157,8 @@ std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> kmedoids(
     std::vector<int> sec_nearest(n, 0);  // Index of second closest medoids.  Used by PAM.
     T total_distance;  // Total distance tp their medoid
     T epsilon = 1e-15;  // Normalized sensitivity for convergence
-
+	
+	std::cout << "init_medoids" << std::endl;
     // set initianl medoids
     kmedoids_details::init_medoids(k, DM, seeds, assignments, sec_nearest, counts);
 
@@ -191,7 +192,8 @@ std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> kmedoids(
                 }
             }
         }
-
+		
+		std::cout << "update_cluster: " << minTotalCost << " " << tolerance << std::endl;
         // convergence check
         if (minTotalCost >= -tolerance)
             break;
