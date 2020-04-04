@@ -356,10 +356,10 @@ int main(int argc, char *argv[])
 	std::vector<Record> test_set;
 	std::vector<int> test_labels;
 	
-	std::tie(dataset, labels) = readMnist("assets/mnist_train.csv", ',', 10000);
+	std::tie(dataset, labels) = readMnist("assets/mnist_train.csv", ',', 1000);
 	
-	std::cout << std::endl;
-	std::cout << "labels:" << std::endl;
+	//std::cout << std::endl;
+	//std::cout << "labels:" << std::endl;
 	//vector_print(labels);
 	   
 	std::tie(test_set, test_labels) = readCsvData("assets/MNIST_anomalies.csv", ',');
@@ -391,22 +391,26 @@ int main(int argc, char *argv[])
 	auto nodes = simple_koc.som_.get_weights();
 	//matrix_print(nodes);
 	write_csv(nodes, "nodes.csv");
-	
-	std::cout << std::endl;
-	vector_print(grid);	
-	
-	std::cout << std::endl;
-	std::cout << "train dataset:" << std::endl;
 
-	auto anomalies = simple_koc.check_if_anomaly(dataset);	
 	std::cout << std::endl;
-	std::cout << "anomalies:" << std::endl;
-	vector_print(anomalies);
+	std::cout << "clusters:" << std::endl;
+	vector_print(simple_koc.clusters);
+	std::vector<std::vector<int>> nodes_clusters;
+	nodes_clusters.push_back(simple_koc.clusters);
+	write_csv(nodes_clusters, "clusters.csv");
 	
+	//std::cout << std::endl;
+	//std::cout << "train dataset:" << std::endl;
+
+	//auto anomalies = simple_koc.check_if_anomaly(dataset);	
+	//std::cout << std::endl;
+	//std::cout << "anomalies:" << std::endl;
+	//vector_print(anomalies);
+	//
 	auto assignments = simple_koc.assign_to_clusters(dataset);	
-	std::cout << std::endl;
-	std::cout << "assignments:" << std::endl;
-	vector_print(assignments);
+	//std::cout << std::endl;
+	//std::cout << "assignments:" << std::endl;
+	//vector_print(assignments);
 
 
 	// accuracy
@@ -444,19 +448,19 @@ int main(int argc, char *argv[])
 
 	// test dataset	
 	
-	std::cout << std::endl;
-	std::cout << std::endl;
-	std::cout << "test dataset:" << std::endl;
+	//std::cout << std::endl;
+	//std::cout << std::endl;
+	//std::cout << "test dataset:" << std::endl;
 
-	anomalies = simple_koc.check_if_anomaly(test_set);	
-	std::cout << std::endl;
-	std::cout << "anomalies:" << std::endl;
-	vector_print(anomalies);
-	
-	assignments = simple_koc.assign_to_clusters(test_set);	
-	std::cout << std::endl;
-	std::cout << "assignments:" << std::endl;
-	vector_print(assignments);
+	//anomalies = simple_koc.check_if_anomaly(test_set);	
+	//std::cout << std::endl;
+	//std::cout << "anomalies:" << std::endl;
+	//vector_print(anomalies);
+	//
+	//assignments = simple_koc.assign_to_clusters(test_set);	
+	//std::cout << std::endl;
+	//std::cout << "assignments:" << std::endl;
+	//vector_print(assignments);
 
 	///
 	//
