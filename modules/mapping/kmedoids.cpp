@@ -29,6 +29,7 @@ namespace kmedoids_details {
         // go through and assign each object to nearest medoid, keeping track of total distance.
         T total_distance = 0;
         for (int i = 0; i < assignments.size(); i++) {
+			std::cout << "assignment " << i << std::endl;
             T d1, d2;  // smallest, second smallest distance to medoid, respectively
             int m1, m2;  // index of medoids with distances d1, d2 from object i, respectively
             d1 = d2 = std::numeric_limits<T>::max();
