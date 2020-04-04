@@ -209,7 +209,7 @@ public:
      * @brief debug function, print distance matrix to stdout
      *
      */
-    void print()
+    void print() const
     {
         std::cout << "D_=\n" << D_ << std::endl;
         std::cout << "non_zeros=" << D_.nonZeros() << std::endl;
