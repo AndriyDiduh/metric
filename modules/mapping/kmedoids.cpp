@@ -169,6 +169,7 @@ std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> kmedoids(
         for (int i = 0; i < counts.size(); ++i) {
             counts[i] = 0;
         }
+		std::cout << "update_cluster" << std::endl;
         total_distance = kmedoids_details::update_cluster(DM, seeds, assignments, sec_nearest, counts);
 
         //vars to keep track of minimum
