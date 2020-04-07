@@ -93,7 +93,8 @@ namespace kmedoids_details {
                     best_obj = i;
                 }
             }
-
+			
+			std::cout << "seed " << best_obj << std::endl;
             seeds.push_back(best_obj);
             kmedoids_details::update_cluster(DM, seeds, assignments, sec_nearest, counts);
         }
