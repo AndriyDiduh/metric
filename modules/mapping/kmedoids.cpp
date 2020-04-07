@@ -33,8 +33,10 @@ namespace kmedoids_details {
             int m1, m2;  // index of medoids with distances d1, d2 from object i, respectively
             d1 = d2 = std::numeric_limits<T>::max();
             m1 = m2 = seeds.size();
+			std::cout << "--- " << d1 << " " << d2 << std::endl;
             for (int m = 0; m < seeds.size(); m++) {
                 T d = DM(i, seeds[m]);
+				std::cout << "---> " << d << " " << i << " " << m << std::endl;
                 if (d < d1 || seeds[m] == i) {  // prefer the medoid in case of ties.
                     d2 = d1;
                     m2 = m1;
