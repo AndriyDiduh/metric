@@ -105,7 +105,10 @@ namespace kmedoids_details {
         std::vector<int>& assignments, std::vector<int>& sec_nearest)
     {
         T total = 0;
-		vector_print(seeds);
+		for (int j = 0; j < seeds.size(); j++) {
+			std::cout << seeds[j] << " ";
+		}
+		std::cout << std::endl;
         for (int j = 0; j < assignments.size(); j++) {
 			std::cout << "cost 3" << std::endl;
             int mi = seeds[i];  // object id of medoid i
