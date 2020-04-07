@@ -140,7 +140,7 @@ namespace metric {
 				 */
 			std::tuple<std::vector<size_t>, std::vector<typename RecType::value_type>> top_outliers(const std::vector<RecType>& samples, int count = 10);
 
-		private:
+		//private:
 			int min_cluster_size_ = 1;
 			double anomaly_sigma_ = 1;
 			size_t iterations_;
