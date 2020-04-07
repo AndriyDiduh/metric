@@ -41,6 +41,16 @@ auto Matrix<RecType, Metric>::insert(const RecType& item) -> std::size_t
     std::size_t old_size = data_.size();
     D_.resize(old_size + 1, old_size + 1, true);
     for (std::size_t i = 0; i < old_size; i++) {
+		
+		for (std::size_t j = 0; j < data_[i].size(); j++) {
+			std::cout << data_[i][j] << " ";
+		}
+		std::cout << std::endl;
+		for (std::size_t j = 0; j < item.size(); j++) {
+			std::cout << item[j] << " ";
+		}
+		std::cout << std::endl;
+		std::cout << i << " " << old_size << ": " << metric_(data_[i], item) << std::endl;
         D_.insert(i, old_size, metric_(data_[i], item));
     }
     data_.push_back(item);

@@ -185,6 +185,7 @@ namespace metric {
 				// clustering on the reduced data
 				
 				metric::Matrix<recType, Metric> matrix(nodes_data);
+				matrix.print();
 				
 				std::cout << "#8" << std::endl;
 				auto[assignments, seeds, counts] = metric::kmedoids(matrix, num_clusters);
