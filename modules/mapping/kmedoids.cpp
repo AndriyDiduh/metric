@@ -33,10 +33,8 @@ namespace kmedoids_details {
             int m1, m2;  // index of medoids with distances d1, d2 from object i, respectively
             d1 = d2 = std::numeric_limits<T>::max();
             m1 = m2 = seeds.size();
-			std::cout << "--- " << d1 << " " << d2 << std::endl;
             for (int m = 0; m < seeds.size(); m++) {
                 T d = DM(i, seeds[m]);
-				std::cout << "---> " << d << " " << i << " " << m << std::endl;
                 if (d < d1 || seeds[m] == i) {  // prefer the medoid in case of ties.
                     d2 = d1;
                     m2 = m1;
@@ -96,7 +94,6 @@ namespace kmedoids_details {
                 }
             }
 			
-			std::cout << "seed " << best_obj << std::endl;
             seeds.push_back(best_obj);
             kmedoids_details::update_cluster(DM, seeds, assignments, sec_nearest, counts);
         }
@@ -107,34 +104,20 @@ namespace kmedoids_details {
         std::vector<int>& assignments, std::vector<int>& sec_nearest)
     {
         T total = 0;
-		for (int j = 0; j < seeds.size(); j++) {
-			std::cout << seeds[j] << " ";
-		}
-		for (int j = 0; j < assignments.size(); j++) {
-			std::cout << assignments[j] << " ";
-		}
-		std::cout << std::endl;
         for (int j = 0; j < assignments.size(); j++) {
-			std::cout << "cost 3" << std::endl;
             int mi = seeds[i];  // object id of medoid i
             T dhj = DM(h, j);  // distance between object h and object j
-			std::cout << "cost 4" << std::endl;
 
             int mj1 = seeds[assignments[j]];  // object id of j's nearest medoid
-			std::cout << "cost 4.5: " << DM.size() << " " << mj1 << " " << j << std::endl;
-			DM.print();
             T dj1 = DM(mj1, j);  // distance to j's nearest medoid
-			std::cout << "cost 5" << std::endl;
 
             // check if D bt/w medoid i and j is same as j's current nearest medoid.
             if (DM(mi, j) == dj1) {
-				std::cout << "cost 6" << std::endl;
                 T dj2 = std::numeric_limits<T>::max();
                 if (seeds.size() > 1) {  // look at 2nd nearest if there's more than one medoid.
                     int mj2 = seeds[sec_nearest[j]];  // object id of j's 2nd-nearest medoid
                     dj2 = DM(mj2, j);  // D to j's 2nd-nearest medoid
                 }
-				std::cout << "cost 7" << std::endl;
                 total += std::min(dj2, dhj) - dj1;
 
             } else if (dhj < dj1) {
@@ -181,12 +164,13 @@ std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> kmedoids(
 
     T tolerance = epsilon * Dsum / (DM.size() * DM.size());
 
+	int iters = 0;
     while (true) {
         // initial cluster
         for (int i = 0; i < counts.size(); ++i) {
             counts[i] = 0;
         }
-		std::cout << "update_cluster 1 " << std::endl;
+		//std::cout << "update_cluster 1 " << std::endl;
         total_distance = kmedoids_details::update_cluster(DM, seeds, assignments, sec_nearest, counts);
 
         //vars to keep track of minimum
@@ -194,7 +178,8 @@ std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> kmedoids(
         int minMedoid = 0;
         int minObject = 0;
 
-		std::cout << "update_cluster 2 " << std::endl;
+		//std::cout << "update_cluster 2 " << std::endl;
+		DM.print();
 
         //iterate over each medoid
         for (int i = 0; i < k; i++) {
@@ -204,9 +189,7 @@ std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> kmedoids(
                     continue;
 
                 //see if the total cost of swapping i & h was less than min
-				std::cout << "cost 1" << std::endl;
                 T curCost = kmedoids_details::cost(i, h, DM, seeds, assignments, sec_nearest);
-				std::cout << "cost 2" << std::endl;
                 if (curCost < minTotalCost) {
                     minTotalCost = curCost;
                     minMedoid = i;
@@ -215,10 +198,13 @@ std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> kmedoids(
             }
         }
 		
-		std::cout << "update_cluster: " << minTotalCost << " " << tolerance << std::endl;
+		//std::cout << "update_cluster: " << minTotalCost << " " << tolerance << std::endl;
         // convergence check
         if (minTotalCost >= -tolerance)
             break;
+		iters++;
+		if (iters > 1)
+			break;
 
         // install the new medoid if we found a beneficial swap
         seeds[minMedoid] = minObject;
