@@ -108,6 +108,9 @@ namespace kmedoids_details {
 		for (int j = 0; j < seeds.size(); j++) {
 			std::cout << seeds[j] << " ";
 		}
+		for (int j = 0; j < assignments.size(); j++) {
+			std::cout << assignments[j] << " ";
+		}
 		std::cout << std::endl;
         for (int j = 0; j < assignments.size(); j++) {
 			std::cout << "cost 3" << std::endl;
