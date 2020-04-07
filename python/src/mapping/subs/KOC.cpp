@@ -1,5 +1,4 @@
-#include "../../metric_types.hpp"
-#include "modules/mapping/kmeans.hpp"   // FIXME: someone forgot this in KOC
+#include "metric_types.hpp"
 #include "modules/distance/k-random/VOI.hpp"    // FIXME: and this
 #include "modules/mapping/KOC.hpp"
 
@@ -110,7 +109,7 @@ void wrap_metric_KOC(py::module& m) {
 // TODO: make loop over metrics and graphs
 // TODO: add distribution
 void export_metric_KOC(py::module& m) {
-    wrap_metric_KOC<std::vector<double>, metric::Grid6, metric::Euclidian<double>>(m);
+    wrap_metric_KOC<std::vector<double>, metric::Grid6, metric::Euclidean<double>>(m);
     wrap_metric_KOC<std::vector<double>, metric::Grid6, metric::Manhatten<double>>(m);
     wrap_metric_KOC<std::vector<double>, metric::Grid6, metric::Chebyshev<double>>(m);
     wrap_metric_KOC<std::vector<double>, metric::Grid6, metric::P_norm<double>>(m);

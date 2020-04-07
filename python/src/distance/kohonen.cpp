@@ -3,6 +3,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
+#include <pybind11/iostream.h>
+
 #include <vector>
 
 namespace py = pybind11;
@@ -11,7 +13,7 @@ namespace py = pybind11;
 template <typename D,
             typename Sample,
             typename Graph = metric::Grid4,
-            typename Metric = metric::Euclidian<D>,
+            typename Metric = metric::Euclidean<D>,
 	        typename Distribution = std::uniform_real_distribution<typename Sample::value_type>>
     // D is a distance return type
 
@@ -42,6 +44,7 @@ void register_wrapper_kohonen(py::module& m) {
         py::arg("sample2")
     );
     metric.def("print_shortest_path", &Class::print_shortest_path,
+        py::call_guard<py::scoped_ostream_redirect, py::scoped_estream_redirect>(),
         "Recursive function that reconstructs the shortest backwards node by node.",
         py::arg("from_node"),
         py::arg("to_node")
@@ -51,5 +54,5 @@ void register_wrapper_kohonen(py::module& m) {
 void export_metric_kohonen(py::module& m) {
     using DistanceType = double;
     using SampleType = std::vector<DistanceType>;
-    register_wrapper_kohonen<DistanceType, SampleType, metric::Grid4, metric::Euclidian<DistanceType>>(m);
+    register_wrapper_kohonen<DistanceType, SampleType, metric::Grid4, metric::Euclidean<DistanceType>>(m);
 }

@@ -365,9 +365,9 @@ double estimate(
 
 // updated version, for different metric
 // averaged entropy estimation: code COPIED from mgc.*pp with only mgc replaced with entropy, TODO refactor to avoid code dubbing
-template <typename recType, typename Metric>
+template <typename RecType, typename Metric>
 template <typename Container>
-double Entropy_simple<recType, Metric>::operator()(
+double Entropy_simple<RecType, Metric>::operator()(
         const Container& data
 ) const
 {
@@ -398,7 +398,7 @@ double Entropy_simple<recType, Metric>::operator()(
 
     if constexpr (!std::is_same<Metric, typename metric::Chebyshev<T>>::value) {
         double p = 1; // Manhatten and other metrics (TODO check if it is correct for them!)
-        if constexpr (std::is_same<Metric, typename metric::Euclidian<T>>::value) {
+        if constexpr (std::is_same<Metric, typename metric::Euclidean<T>>::value) {
             p = 2; // Euclidean
         } else if constexpr (std::is_same<Metric, typename metric::P_norm<T>>::value) {
             p = metric.p; // general Minkowsky
@@ -416,9 +416,9 @@ double Entropy_simple<recType, Metric>::operator()(
 
 
 // averaged entropy estimation: code COPIED from mgc.*pp with only mgc replaced with entropy, TODO refactor to avoid code dubbing
-template <typename recType, typename Metric>
+template <typename RecType, typename Metric>
 template <typename Container>
-double Entropy_simple<recType, Metric>::estimate(
+double Entropy_simple<RecType, Metric>::estimate(
         const Container & a,
         const size_t sampleSize,
         const double threshold,
@@ -439,34 +439,45 @@ double Entropy_simple<recType, Metric>::estimate(
 
 
 
-template <typename recType, typename Metric>
+template <typename RecType, typename Metric>
 template <typename Container>
-double Entropy<recType, Metric>::operator()(const Container& data) const
+double Entropy<RecType, Metric>::operator()(const Container& data) const
 {
     using T = type_traits::underlaying_type_t<Container>;
     using V = type_traits::index_value_type_t<Container>;
     size_t n = data.size();
     size_t d = data[0].size();
 
-    assert(p < n);
-    assert(k < p);
+    size_t k_ = k;
+    size_t p_ = p;
+    if (p_ >= n)
+        p_ = n - 1; // TODO we need to signal somehow that parameters are altered
+    if (k_ >= p_)
+        k_ = p_ - 1;
+    if (p_ < 3)
+        p_ = 3;
+    if (k_ < 2)
+        k_ = 2;
+
+    if (n < 4)
+        return std::nan("estimation failed");
 
     double h = 0;
     int got_results = 0;  // absents in Matlab original code
 
     metric::Tree<V, Metric> tree (data, -1, metric);
-    blaze::DynamicMatrix<double> Nodes (p, d, 0);
+    blaze::DynamicMatrix<double> Nodes (p_, d, 0);
     blaze::DynamicVector<double> mu (d, 0);
     blaze::DynamicVector<double> lb (d, 0);
     blaze::DynamicVector<double> ub (d, 0);
     blaze::DynamicVector<double> x_vector (d, 0);
     for (size_t i = 0; i < n; ++i) {
 
-        auto res = tree.knn(data[i], p);
-        auto eps = res[k-1].second;
+        auto res = tree.knn(data[i], p_);
+        auto eps = res[k_-1].second;
 
         blaze::reset(mu);
-        for (size_t p_idx= 0; p_idx < p; ++p_idx) { // r v realizations from the tree
+        for (size_t p_idx= 0; p_idx < p_; ++p_idx) { // r v realizations from the tree
             for (size_t d_idx = 0; d_idx < d; ++d_idx) { // dimensions
                 //Nodes(p_idx, d_idx) = res[p_idx].first->data[d_idx];
                 //mu[d_idx] += res[p_idx].first->data[d_idx];
@@ -474,11 +485,11 @@ double Entropy<recType, Metric>::operator()(const Container& data) const
                 mu[d_idx] += res[p_idx].first->get_data()[d_idx];
             }
         }
-        mu = mu/p;
+        mu = mu/p_;
         Nodes = Nodes - blaze::expand(blaze::trans(mu), Nodes.rows());
         double offset = 1e-8;
         //double offset = 1e-5; // TODO consider dependence on machine epsilon
-        auto K = blaze::evaluate( (blaze::trans(Nodes) * Nodes)*p/(p - 1) + blaze::IdentityMatrix<double>(d)*offset );
+        auto K = blaze::evaluate( (blaze::trans(Nodes) * Nodes)*p_/(p_ - 1) + blaze::IdentityMatrix<double>(d)*offset );
 
         blaze::reset(lb);
         blaze::reset(ub);
@@ -510,9 +521,9 @@ double Entropy<recType, Metric>::operator()(const Container& data) const
 
 
 // averaged entropy estimation: code COPIED from mgc.*pp with only mgc replaced with entropy, TODO refactor to avoid code dubbing
-template <typename recType, typename Metric>
+template <typename RecType, typename Metric>
 template <typename Container>
-double Entropy<recType, Metric>::estimate(
+double Entropy<RecType, Metric>::estimate(
         const Container & a,
         const size_t sampleSize,
         const double threshold,
