@@ -398,6 +398,13 @@ int main(int argc, char *argv[])
 	> 
 	simple_koc(graph, distance, sigma, 0.8, 0.0, 200, distribution, 4, 2.0, random_seed); 
 	simple_koc.train(dataset, num_clusters);
+
+	auto nodes = simple_koc.som_.get_weights();
+	write_csv(nodes, "nodes.csv");
+
+	std::vector<std::vector<int>> nodes_clusters;
+	nodes_clusters.push_back(simple_koc.clusters);
+	write_csv(nodes_clusters, "clusters.csv");
 	
 	//std::cout << std::endl;
 	//std::cout << "train dataset:" << std::endl;
