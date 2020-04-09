@@ -341,23 +341,13 @@ int main(int argc, char *argv[])
 
 	using Record = std::vector<double>;
 
-	size_t best_w_grid_size = 20;
-	size_t best_h_grid_size = 20;
-
-	// if overrided from arguments
-
-	if (argc > 3)
-	{
-		best_w_grid_size = std::stod(argv[2]);
-		best_h_grid_size = std::stod(argv[3]);
-	}
 
 	std::vector<Record> dataset;
 	std::vector<int> labels;
 	std::vector<Record> test_set;
 	std::vector<int> test_labels;
 
-	std::tie(dataset, labels) = readMnist("assets/mnist_train.csv", ',', 1000);
+	std::tie(dataset, labels) = readMnist("assets/mnist_train.csv", ',', 10000);
 
 	//std::cout << std::endl;
 	//std::cout << "labels:" << std::endl;
@@ -376,18 +366,43 @@ int main(int argc, char *argv[])
 	///
 	//
 
-	int num_clusters = 10;
+	// size of image in the MNIST
+	size_t mnist_image_size = 28;
 
-	// random seed for repeateable results
-	long long random_seed = 777;
+	// grid sizes
+	size_t best_w_grid_size = 20;
+	size_t best_h_grid_size = 20;
+
+	// MNIST labels number
+	int num_clusters = 10;
 
 	// extra deviation of the clusters from original in the KOC
 	double sigma = 1.75;
 
-	auto cost_mat = metric::EMD_details::ground_distance_matrix_of_2dgrid<double>(28, 28);
+	// start learning rate for SOM training. Shows how error can influence on the sample on the first iterations of the training.
+	double start_learn_rate = 0.8;
+	//  finish learning rate for SOM training. Shows how error can influence on the sample on the last iterations of the training.
+	double finish_learn_rate = 0.0;
+
+	// maximum number of iterations for SOM training.
+	size_t iterations = 200;
+
+	// number of neighbours of the checking node which weights (positions) will be corrected while SOM training. 
+	double neighborhood_start_size = 4;
+	// shows how distance from the checking node influence to weights (positions) of the checking node neighbours while SOM training. 
+	double neigbour_range_decay = 2; 
+
+	// random seed for repeateable results
+	long long random_seed = 777;
+
+	// cost matrices for EMD
+	auto cost_mat = metric::EMD_details::ground_distance_matrix_of_2dgrid<double>(mnist_image_size, mnist_image_size);
     auto maxCost = metric::EMD_details::max_in_distance_matrix(cost_mat);
+	// distance
     metric::EMD<double> distance(cost_mat, maxCost);
+	// distribution
 	auto distribution = std::uniform_real_distribution<double>(0, 255);
+	// grid
 	auto graph = metric::Grid4(best_w_grid_size, best_h_grid_size);
 	
 	metric::KOC_details::KOC<
@@ -396,7 +411,7 @@ int main(int argc, char *argv[])
 		metric::EMD<double>,
 		std::uniform_real_distribution<double>
 	> 
-	simple_koc(graph, distance, sigma, 0.8, 0.0, 200, distribution, 4, 2.0, random_seed); 
+	simple_koc(graph, distance, sigma, start_learn_rate, finish_learn_rate, iterations, distribution, neighborhood_start_size, neigbour_range_decay, random_seed); 
 	simple_koc.train(dataset, num_clusters);
 
 	auto nodes = simple_koc.som_.get_weights();
