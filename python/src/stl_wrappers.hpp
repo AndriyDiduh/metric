@@ -11,35 +11,91 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <vector>
-
+#include <type_traits>
 
 /**
     Tiny adapter that provides NumpyArray with std::vector like interface
 */
-template<typename T>
+template<typename T, int Dims = 1>
 class NumpyToVectorAdapter: public pybind11::array_t<T> {
+    using Accessor = pybind11::detail::unchecked_reference<T, Dims>;
+    std::unique_ptr<Accessor> internalBuffer;
 public:
+    using Iterator = T*;
+
     using pybind11::array_t<T>::array_t;
 
     NumpyToVectorAdapter(pybind11::array_t<T> obj)
         : pybind11::array_t<T>(obj)
     {
+        this->internalBuffer(new Accessor(this->template unchecked<T, Dims>()));
     }
 
-    bool empty() const {return this->size() == 0;}
+    T operator[](size_t index) const {
+        return this->internalBuffer->operator[](index);
+    }
 
-    T* begin() const {
+    bool empty() const {
+        return this->size() == 0;
+    }
+
+    Iterator begin() const {
         return pybind11::detail::array_begin<T>(this->request());
     }
 
-    T* end() const {
+    Iterator end() const {
         return pybind11::detail::array_end<T>(this->request());
     }
+};
 
-    const T& operator[](size_t index) const {
-        // TODO: init upon creation
-        auto r = pybind11::array_t<T>::template unchecked<1>();
-        return r[index];
+template<typename T, int Dims = 2>
+class NumpyToMatrixAdapter: public pybind11::array_t<T> {
+    using Accessor = pybind11::detail::unchecked_reference<T, Dims>;
+
+    template<typename T1>
+    class Proxy {
+        Accessor* buffer;
+        size_t dimension;
+    public:
+        using Iterator = typename std::add_pointer<T1>::type;
+
+        Proxy(Accessor* buffer, size_t dimension)
+            : buffer(buffer)
+            , dimension(dimension)
+        {
+        }
+
+        const T1& operator[](size_t index) const {
+            return this->buffer->operator()(dimension, index);
+        }
+
+        bool empty() const {
+            return this->size() == 0;
+        }
+
+        size_t size() const {
+            return this->buffer->shape(dimension);
+        }
+
+        Iterator begin() const {
+            return pybind11::detail::array_iterator<T>(this->buffer->data(dimension));
+        }
+
+        Iterator end() const {
+            return pybind11::detail::array_iterator<T>(this->buffer->data(dimension) + this->size());
+        }
+    };
+
+    std::unique_ptr<Accessor> internalBuffer;
+public:
+    NumpyToMatrixAdapter(pybind11::array_t<T> obj)
+        : pybind11::array_t<T>(obj)
+    {
+        this->internalBuffer(new Accessor(this->template unchecked<T, Dims>()));
+    }
+
+    Proxy<T> operator[](size_t index) const {
+        return Proxy<T>(this->internalBuffer.get(), index);
     }
 };
 

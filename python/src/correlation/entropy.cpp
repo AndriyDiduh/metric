@@ -6,6 +6,7 @@
   Copyright (c) 2020 Panda Team
 */
 #include "metric_types.hpp"
+#include "stl_wrappers.hpp"
 
 #include "modules/correlation/entropy.hpp"
 #include <pybind11/pybind11.h>
@@ -58,8 +59,8 @@ void wrap_metric_entropy(py::module& m) {
 
 void export_metric_entropy(py::module& m) {
     using Value = double;
-    using RecType = std::vector<Value>;
-    using Container = std::vector<RecType>;
+    using RecType = NumpyToVectorAdapter<Value>;
+    using Container = NumpyToMatrixAdapter<Value>;
     using Functor = std::function<Value(const Container&, const Container&)>;
 
     boost::mpl::for_each<metric::MetricTypes, boost::mpl::make_identity<boost::mpl::_1>>([&](auto metr) {
