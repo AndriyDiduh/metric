@@ -79,12 +79,14 @@ void register_wrapper_chebyshev(py::module& m) {
 }
 
 void export_metric_standards(py::module& m) {
-    register_wrapper_euclidean<double, NumpyToVectorAdapter<double>>(m);
-    register_wrapper_manhatten<double, NumpyToVectorAdapter<double>>(m);
-    register_wrapper_pnorm<double, NumpyToVectorAdapter<double>>(m);
-    register_wrapper_euclidean_thresholded<double, NumpyToVectorAdapter<double>>(m);
-    register_wrapper_cosine<double, NumpyToVectorAdapter<double>>(m);
-    register_wrapper_chebyshev<double, NumpyToVectorAdapter<double>>(m);
+    using Value = double;
+    using Container = NumpyToVectorAdapter<Value>;
+    register_wrapper_euclidean<Value, Container>(m);
+    register_wrapper_manhatten<Value, Container>(m);
+    register_wrapper_pnorm<Value, Container>(m);
+    register_wrapper_euclidean_thresholded<Value, Container>(m);
+    register_wrapper_cosine<Value, Container>(m);
+    register_wrapper_chebyshev<Value, Container>(m);
 }
 
 PYBIND11_MODULE(standards, m) {

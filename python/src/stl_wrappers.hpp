@@ -88,14 +88,17 @@ class NumpyToMatrixAdapter: public pybind11::array_t<T> {
 
     std::unique_ptr<Accessor> internalBuffer;
 public:
+    using pybind11::array_t<T>::array_t;
+
     NumpyToMatrixAdapter(pybind11::array_t<T> obj)
         : pybind11::array_t<T>(obj)
     {
         this->internalBuffer(new Accessor(this->template unchecked<T, Dims>()));
     }
 
-    Proxy<T> operator[](size_t index) const {
-        return Proxy<T>(this->internalBuffer.get(), index);
+    NumpyToVectorAdapter<T> operator[](size_t index) const {
+        return NumpyToVectorAdapter<T>(this->operator()(index));
+//        return Proxy<T>(this->internalBuffer.get(), index);
     }
 };
 
