@@ -14,6 +14,17 @@ Copyright (c) 2018 Michael Welsch
 namespace metric {
 
 
+/*template <typename T>
+size_t size(const T& a) {
+    a.size();
+}
+
+
+template <typename T>
+size_t size(const T& a) {
+    blaze::size(a);
+}*/
+
 
 //-------- global settings
 

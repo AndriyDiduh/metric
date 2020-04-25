@@ -25,7 +25,7 @@ Copyright (c) PANDA Team
 
 // include the implementation
 
-#include "distance/k-related/Standards.hpp"
+#include "distance/k-related/standards.hpp"
 
 
 #endif //_METRIC_DISTANCE_HPP
